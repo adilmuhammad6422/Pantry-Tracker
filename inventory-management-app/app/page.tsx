@@ -388,7 +388,7 @@ export default function Home() {
                     {description}
                   </Typography>
                   <Typography variant="body1" color="#fff">
-                    ${price.toFixed(2)}
+                    ${typeof price === 'number' ? price.toFixed(2) : 'N/A'}
                   </Typography>
                   <Typography variant="body1" color="#fff">
                     {supplier}
