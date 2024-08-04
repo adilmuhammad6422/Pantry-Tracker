@@ -71,8 +71,14 @@ export default function Home() {
     const docRef = doc(collection(firestore, 'inventory'), name)
     const docSnap = await getDoc(docRef)
     if (docSnap.exists()) {
-      const { quantity: existingQuantity } = docSnap.data() as { quantity: number }
-      await setDoc(docRef, { quantity: existingQuantity + quantity, category, description, price, supplier })
+      const { quantity: existingQuantity, category: existingCategory, description: existingDescription, price: existingPrice, supplier: existingSupplier } = docSnap.data() as InventoryItem
+      await setDoc(docRef, {
+        quantity: existingQuantity + quantity,
+        category: existingCategory,
+        description: existingDescription,
+        price: existingPrice,
+        supplier: existingSupplier,
+      })
     } else {
       await setDoc(docRef, { quantity, category, description, price, supplier })
     }
@@ -83,11 +89,11 @@ export default function Home() {
     const docRef = doc(collection(firestore, 'inventory'), name)
     const docSnap = await getDoc(docRef)
     if (docSnap.exists()) {
-      const { quantity } = docSnap.data() as { quantity: number }
+      const { quantity, category, description, price, supplier } = docSnap.data() as InventoryItem
       if (quantity <= 1) {
         await deleteDoc(docRef)
       } else {
-        await setDoc(docRef, { quantity: quantity - 1 })
+        await setDoc(docRef, { quantity: quantity - 1, category, description, price, supplier })
       }
     }
     await updateInventory()
@@ -123,7 +129,13 @@ export default function Home() {
 
   const handleEditItem = async () => {
     const docRef = doc(collection(firestore, 'inventory'), editItemName)
-    await setDoc(docRef, { quantity: itemQuantity, category: itemCategory, description: itemDescription, price: itemPrice, supplier: itemSupplier })
+    await setDoc(docRef, {
+      quantity: itemQuantity,
+      category: itemCategory,
+      description: itemDescription,
+      price: itemPrice,
+      supplier: itemSupplier,
+    })
     await updateInventory()
     setEditOpen(false)
   }
@@ -388,7 +400,7 @@ export default function Home() {
                     {description}
                   </Typography>
                   <Typography variant="body1" color="#fff">
-                    ${typeof price === 'number' ? price.toFixed(2) : 'N/A'}
+                    ${typeof price === 'number' ? price.toFixed(2) : '0.00'}
                   </Typography>
                   <Typography variant="body1" color="#fff">
                     {supplier}
